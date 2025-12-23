@@ -1,0 +1,62 @@
+
+import { ChecklistItem } from './types';
+
+export const CHECKLIST_ITEMS: ChecklistItem[] = [
+  // MOTOR
+  { id: 1, label: "NÍVEL DE ÓLEO HIDRÁULICO - RECOLHER PISTÕES", category: "MOTOR" },
+  
+  // CABINE INTERNA/EXTERNA
+  { id: 2, label: "CHAVE RODA/MACACO/ESTEPE", category: "CABINE INTERNA/EXTERNA" },
+  { id: 3, label: "LIMPEZA E CONSERVAÇÃO DA CABINE", category: "CABINE INTERNA/EXTERNA" },
+  { id: 4, label: "BANCOS E TAPETES", category: "CABINE INTERNA/EXTERNA" },
+  { id: 5, label: "PARA-BRISAS", category: "CABINE INTERNA/EXTERNA" },
+  { id: 6, label: "INSTRUMENTOS DO PAINEL", category: "CABINE INTERNA/EXTERNA" },
+  { id: 7, label: "ALAVANCA DE CÂMBIO - CAPA SANFONADA", category: "CABINE INTERNA/EXTERNA" },
+  { id: 8, label: "TRIÂNGULO", category: "CABINE INTERNA/EXTERNA" },
+  { id: 9, label: "CRLV (DOCUMENTO)", category: "CABINE INTERNA/EXTERNA" },
+  { id: 10, label: "TAMPA DA CAIXA DE FUSÍVEL", category: "CABINE INTERNA/EXTERNA" },
+  { id: 11, label: "SUPORTE PARA CELULAR/CARREGADOR", category: "CABINE INTERNA/EXTERNA" },
+  { id: 12, label: "ALAVANCA DE REGULAGEM DO VOLANTE", category: "CABINE INTERNA/EXTERNA" },
+  { id: 13, label: "PINO (PARA REBOQUE DO VEÍCULO)", category: "CABINE INTERNA/EXTERNA" },
+  { id: 14, label: "EXTINTOR", category: "CABINE INTERNA/EXTERNA" },
+  { id: 15, label: "QUEBRA-SOL", category: "CABINE INTERNA/EXTERNA" },
+  { id: 16, label: "TAMPA PORTA-LUVAS", category: "CABINE INTERNA/EXTERNA" },
+  { id: 17, label: "RETROVISORES", category: "CABINE INTERNA/EXTERNA" },
+  { id: 18, label: "ESPELHOS AUXILIARES", category: "CABINE INTERNA/EXTERNA" },
+  { id: 19, label: "MAÇANETAS", category: "CABINE INTERNA/EXTERNA" },
+  { id: 20, label: "FARÓIS E LANTERNAS (QUEBRADA E/OU TRINCADA)", category: "CABINE INTERNA/EXTERNA" },
+  { id: 21, label: "PARA-CHOQUE, PARA-LAMAS E PARA-BARRO", category: "CABINE INTERNA/EXTERNA" },
+
+  // BAÚ
+  { id: 22, label: "ALAVANCAS DE ACIONAMENTO COMANDO (TRAS/DIANT)", category: "BAÚ" },
+  { id: 23, label: "MANGUEIRAS E CANOS HIDRÁULICOS (VAZAMENTO)", category: "BAÚ" },
+  { id: 24, label: "CILINDROS HIDRÁULICOS (VAZAMENTOS E PINOS)", category: "BAÚ" },
+  { id: 25, label: "PLATAFORMA OPERACIONAL/BARRA DE APOIO - COLETORES", category: "BAÚ" },
+  { id: 26, label: "VASSOURA E PÁ", category: "BAÚ" },
+  { id: 27, label: "LANTERNAS E GIROFLEX (QUEBRADA, TRINCADA)", category: "BAÚ" },
+  { id: 28, label: "GRADE DE PROTEÇÃO DANIFICADA", category: "BAÚ" },
+  { id: 29, label: "CÂMERAS (RÉ E MONITORAMENTO)", category: "BAÚ" },
+  { id: 30, label: "COROTE E DISPENSER DE DETERGENTE", category: "BAÚ" },
+
+  // GERAL
+  { id: 31, label: "TAMPA DO TANQUE DE COMBUSTÍVEL", category: "GERAL" },
+  { id: 32, label: "TAMPA DA BATERIA", category: "GERAL" },
+  { id: 33, label: "AR CONDICIONADO/FUNCIONAMENTO", category: "GERAL" },
+  { id: 34, label: "PNEUS (CORTADOS E/OU PINTADOS NA GUIA)", category: "GERAL" },
+  { id: 35, label: "MOLEJOS TRASEIROS", category: "GERAL" },
+  { id: 36, label: "MOLEJOS DIANTEIROS", category: "GERAL" },
+  { id: 37, label: "RODAS (TRINCADAS E/OU SEM PARAFUSOS)", category: "GERAL" },
+  { id: 38, label: "CABO DE BASCULAMENTO DA CABINE", category: "GERAL" },
+  { id: 39, label: "CALÇO DE RODA", category: "GERAL" },
+
+  // VERIFICAR FUNCIONAMENTO
+  { id: 40, label: "TOMADA DE FORÇA (FUNCIONAMENTO E/OU VAZAMENTO)", category: "FUNCIONAMENTO" },
+  { id: 41, label: "ACELERAÇÃO AUTOMÁTICA", category: "FUNCIONAMENTO" },
+  { id: 42, label: "SISTEMA HIDRÁULICO", category: "FUNCIONAMENTO" },
+  { id: 43, label: "LIMPADORES DE PARA-BRISA", category: "FUNCIONAMENTO" },
+  { id: 44, label: "LUZES - FREIO - PISCA - RÉ - ALERTA - FARÓIS", category: "FUNCIONAMENTO" },
+  { id: 45, label: "ALARME DE RÉ - LUZ DE PLACA - GIROFLEX", category: "FUNCIONAMENTO" },
+  { id: 46, label: "BOTOEIRA DE ACIONAMENTO", category: "FUNCIONAMENTO" },
+  { id: 47, label: "BOTOEIRA DE EMERGÊNCIA", category: "FUNCIONAMENTO" },
+  { id: 48, label: "LANTERNA AUXILIAR", category: "FUNCIONAMENTO" },
+];
