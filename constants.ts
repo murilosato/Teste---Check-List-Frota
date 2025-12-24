@@ -1,5 +1,5 @@
 
-import { ChecklistItem } from './types';
+import { CHECKLIST_ITEMS } from './constants';
 
 export const CHECKLIST_ITEMS: ChecklistItem[] = [
   { id: 1, label: "NÍVEL DE ÓLEO HIDRÁULICO - RECOLHER PISTÕES", category: "MOTOR" },
