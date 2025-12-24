@@ -137,12 +137,19 @@ const App: React.FC = () => {
   }, []);
 
   const fetchCloudData = async () => {
+    // Guard clause: se o client for null, o app opera apenas localmente
+    if (!supabase) {
+      console.log("Supabase não disponível. Operando em modo offline.");
+      return;
+    }
+
     try {
       // Busca backup de checklists
-      const { data: eData } = await supabase.from('checklist_entries').select('entry_data');
+      const { data: eData, error } = await supabase.from('checklist_entries').select('entry_data');
+      if (error) throw error;
+
       if (eData) {
         const cloudEntries = eData.map(d => d.entry_data as ChecklistEntry);
-        // Merge inteligente poderia ser feito aqui, por enquanto apenas atualiza se houver novos
         if (cloudEntries.length > 0) {
           setEntries(prev => {
             const merged = [...cloudEntries];
@@ -154,7 +161,7 @@ const App: React.FC = () => {
         }
       }
     } catch (err) {
-      console.warn("Supabase não disponível para sincronização inicial.");
+      console.warn("Supabase inacessível no momento.");
     }
   };
 
@@ -180,7 +187,7 @@ const App: React.FC = () => {
   };
 
   const saveEntry = async (entry: ChecklistEntry) => {
-    // 1. SALVAR LOCALMENTE (Instantâneo)
+    // 1. SALVAR LOCALMENTE (Instantâneo - Experiência do Usuário)
     const newEntries = [entry, ...entries];
     setEntries(newEntries);
     localStorage.setItem('solurb_entries', JSON.stringify(newEntries));
@@ -198,14 +205,19 @@ const App: React.FC = () => {
 
     setView('DASHBOARD');
 
-    // 2. BACKUP NO SUPABASE (Silencioso e não-bloqueante)
-    try {
-      await supabase.from('checklist_entries').insert([{ 
-        id: entry.id, 
-        entry_data: entry 
-      }]);
-    } catch (err) {
-      console.error("Erro no backup Supabase:", err);
+    // 2. BACKUP NO SUPABASE (Silencioso e condicional)
+    if (supabase) {
+      try {
+        await supabase.from('checklist_entries').insert([{ 
+          id: entry.id, 
+          entry_data: entry 
+        }]);
+        console.log("Backup na nuvem concluído.");
+      } catch (err) {
+        console.error("Erro no backup Supabase:", err);
+      }
+    } else {
+      console.warn("Sincronização na nuvem ignorada (Sem credenciais).");
     }
   };
 
@@ -301,13 +313,19 @@ const ChecklistForm: React.FC<{ user: User; vehicles: Vehicle[]; criteria: Check
   });
 
   const handleSave = () => {
-    if (!formData.vehicleId || !formData.driverName || !signature) { alert("Preencha tudo."); return; }
+    if (!formData.vehicleId || !formData.driverName || !signature) { alert("Preencha todos os campos e assine."); return; }
+    
+    // Gerar um UUID seguro para o checklist
+    const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) 
+      ? crypto.randomUUID() 
+      : Math.random().toString(36).substring(2, 15);
+
     onSave({ 
       ...formData as ChecklistEntry, 
-      id: crypto.randomUUID(), 
+      id: newId, 
       createdAt: Date.now(), 
       operatorSignature: signature,
-      hasIssues: false // Simplificado para este exemplo
+      hasIssues: false 
     });
   };
 
@@ -316,19 +334,21 @@ const ChecklistForm: React.FC<{ user: User; vehicles: Vehicle[]; criteria: Check
       <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
         {step === 1 ? (
           <>
-            <input placeholder="Condutor" onChange={e => setFormData({...formData, driverName: e.target.value})} className="w-full p-3 border rounded-xl" />
-            <input placeholder="Prefixo (Ex: SOL-01)" onChange={e => setFormData({...formData, prefix: e.target.value, vehicleId: e.target.value})} className="w-full p-3 border rounded-xl" />
+            <h3 className="text-lg font-bold">Informações Básicas</h3>
+            <input placeholder="Nome do Condutor" onChange={e => setFormData({...formData, driverName: e.target.value})} className="w-full p-3 border rounded-xl" />
+            <input placeholder="Prefixo do Veículo (Ex: SOL-01)" onChange={e => setFormData({...formData, prefix: e.target.value, vehicleId: e.target.value})} className="w-full p-3 border rounded-xl" />
             <div className="flex gap-2">
-              <input type="number" placeholder="KM" onChange={e => setFormData({...formData, km: Number(e.target.value)})} className="w-full p-3 border rounded-xl" />
+              <input type="number" placeholder="KM Atual" onChange={e => setFormData({...formData, km: Number(e.target.value)})} className="w-full p-3 border rounded-xl" />
               <input type="number" placeholder="Horímetro" onChange={e => setFormData({...formData, horimetro: Number(e.target.value)})} className="w-full p-3 border rounded-xl" />
             </div>
-            <button onClick={() => setStep(2)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Próximo</button>
+            <button onClick={() => setStep(2)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Ir para Assinatura</button>
           </>
         ) : (
           <>
+            <h3 className="text-lg font-bold">Assinatura Digital</h3>
             <SignaturePad hasSignature={!!signature} onSave={setSignature} onClear={() => setSignature(undefined)} />
-            <button onClick={handleSave} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Finalizar e Salvar</button>
-            <button onClick={() => setStep(1)} className="w-full text-gray-400">Voltar</button>
+            <button onClick={handleSave} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">Finalizar e Salvar</button>
+            <button onClick={() => setStep(1)} className="w-full text-gray-400 py-2">Voltar para dados</button>
           </>
         )}
       </div>
@@ -338,23 +358,52 @@ const ChecklistForm: React.FC<{ user: User; vehicles: Vehicle[]; criteria: Check
 
 const EntryDetail: React.FC<{ user: User, entry: ChecklistEntry; criteria: ChecklistItem[]; onBack: () => void }> = ({ entry, onBack }) => (
   <div className="space-y-4">
-    <button onClick={onBack} className="text-blue-600">← Voltar</button>
-    <div className="bg-white p-8 rounded-2xl border shadow-lg">
-      <h2 className="text-2xl font-bold">{entry.prefix}</h2>
-      <p>Condutor: {entry.driverName}</p>
-      <p>Data: {entry.date}</p>
+    <button onClick={onBack} className="text-blue-600 font-bold">← Voltar para lista</button>
+    <div className="bg-white p-8 rounded-2xl border shadow-lg space-y-4">
+      <div className="flex justify-between border-b pb-4">
+        <div>
+          <h2 className="text-2xl font-black text-blue-600">{entry.prefix}</h2>
+          <p className="text-sm text-gray-500 uppercase font-bold">{entry.type} • {entry.date}</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div><p className="text-gray-400 uppercase text-[10px] font-black">Condutor</p><p className="font-bold">{entry.driverName}</p></div>
+        <div><p className="text-gray-400 uppercase text-[10px] font-black">KM / Horímetro</p><p className="font-bold">{entry.km} km / {entry.horimetro} h</p></div>
+      </div>
       <div className="mt-6 border-t pt-4">
-        {entry.operatorSignature && <img src={entry.operatorSignature} className="h-20 border" alt="Assinatura" />}
+        <p className="text-gray-400 uppercase text-[10px] font-black mb-2">Assinatura do Operador</p>
+        {entry.operatorSignature && <img src={entry.operatorSignature} className="h-24 border bg-gray-50 rounded-lg p-2" alt="Assinatura" />}
       </div>
     </div>
   </div>
 );
 
 const AdminPanel: React.FC<any> = ({ entries, onRefresh }) => (
-  <div className="text-center space-y-4">
-    <h2 className="text-xl font-bold">Painel Admin</h2>
-    <div className="bg-white p-6 rounded-xl border">Checklists Totais: {entries.length}</div>
-    <button onClick={onRefresh} className="flex items-center gap-2 mx-auto bg-gray-100 px-4 py-2 rounded-lg"><ArrowPathIcon className="w-4 h-4"/> Sincronizar Nuvem</button>
+  <div className="text-center space-y-6">
+    <div className="bg-white p-8 rounded-2xl border shadow-sm">
+      <h2 className="text-xl font-black uppercase text-gray-900 mb-2">Administração</h2>
+      <p className="text-sm text-gray-500 mb-6">Controle de sincronização e dados globais.</p>
+      
+      <div className="grid grid-cols-1 gap-4 mb-6">
+        <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+          <p className="text-xs text-blue-400 uppercase font-black">Vistorias Locais</p>
+          <p className="text-3xl font-black text-blue-600">{entries.length}</p>
+        </div>
+      </div>
+
+      <button 
+        onClick={onRefresh} 
+        className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-xl font-bold hover:bg-black transition-colors"
+      >
+        <ArrowPathIcon className="w-5 h-5"/> Sincronizar com Nuvem
+      </button>
+      
+      {!supabase && (
+        <p className="mt-4 text-[10px] text-red-500 font-bold uppercase">
+          ⚠️ Modo Offline: Variáveis Supabase não configuradas neste ambiente.
+        </p>
+      )}
+    </div>
   </div>
 );
 
