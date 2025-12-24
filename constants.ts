@@ -2,10 +2,7 @@
 import { ChecklistItem } from './types';
 
 export const CHECKLIST_ITEMS: ChecklistItem[] = [
-  // MOTOR
   { id: 1, label: "NÍVEL DE ÓLEO HIDRÁULICO - RECOLHER PISTÕES", category: "MOTOR" },
-  
-  // CABINE INTERNA/EXTERNA
   { id: 2, label: "CHAVE RODA/MACACO/ESTEPE", category: "CABINE INTERNA/EXTERNA" },
   { id: 3, label: "LIMPEZA E CONSERVAÇÃO DA CABINE", category: "CABINE INTERNA/EXTERNA" },
   { id: 4, label: "BANCOS E TAPETES", category: "CABINE INTERNA/EXTERNA" },
@@ -26,8 +23,6 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
   { id: 19, label: "MAÇANETAS", category: "CABINE INTERNA/EXTERNA" },
   { id: 20, label: "FARÓIS E LANTERNAS (QUEBRADA E/OU TRINCADA)", category: "CABINE INTERNA/EXTERNA" },
   { id: 21, label: "PARA-CHOQUE, PARA-LAMAS E PARA-BARRO", category: "CABINE INTERNA/EXTERNA" },
-
-  // BAÚ
   { id: 22, label: "ALAVANCAS DE ACIONAMENTO COMANDO (TRAS/DIANT)", category: "BAÚ" },
   { id: 23, label: "MANGUEIRAS E CANOS HIDRÁULICOS (VAZAMENTO)", category: "BAÚ" },
   { id: 24, label: "CILINDROS HIDRÁULICOS (VAZAMENTOS E PINOS)", category: "BAÚ" },
@@ -37,8 +32,6 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
   { id: 28, label: "GRADE DE PROTEÇÃO DANIFICADA", category: "BAÚ" },
   { id: 29, label: "CÂMERAS (RÉ E MONITORAMENTO)", category: "BAÚ" },
   { id: 30, label: "COROTE E DISPENSER DE DETERGENTE", category: "BAÚ" },
-
-  // GERAL
   { id: 31, label: "TAMPA DO TANQUE DE COMBUSTÍVEL", category: "GERAL" },
   { id: 32, label: "TAMPA DA BATERIA", category: "GERAL" },
   { id: 33, label: "AR CONDICIONADO/FUNCIONAMENTO", category: "GERAL" },
@@ -47,9 +40,7 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
   { id: 36, label: "MOLEJOS DIANTEIROS", category: "GERAL" },
   { id: 37, label: "RODAS (TRINCADAS E/OU SEM PARAFUSOS)", category: "GERAL" },
   { id: 38, label: "CABO DE BASCULAMENTO DA CABINE", category: "GERAL" },
-  { id: 39, label: "CALÇO DE RODA", category: "GERAL" },
-
-  // VERIFICAR FUNCIONAMENTO
+  { id: 39, label: "CALÇO DE Roda", category: "GERAL" },
   { id: 40, label: "TOMADA DE FORÇA (FUNCIONAMENTO E/OU VAZAMENTO)", category: "FUNCIONAMENTO" },
   { id: 41, label: "ACELERAÇÃO AUTOMÁTICA", category: "FUNCIONAMENTO" },
   { id: 42, label: "SISTEMA HIDRÁULICO", category: "FUNCIONAMENTO" },

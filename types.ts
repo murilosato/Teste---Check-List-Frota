@@ -56,7 +56,7 @@ export interface ChecklistEntry {
   generalObservations: string;
   createdAt: number;
   userId: string;
-  operatorSignature?: string; // Base64 signature
+  operatorSignature?: string;
   maintenanceApproval?: Approval;
   operationApproval?: Approval;
   hasIssues: boolean;
