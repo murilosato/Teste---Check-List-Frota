@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from './supabaseClient';
 import { User, ChecklistEntry, Shift, ChecklistType, ItemStatus, Vehicle, ChecklistItem, Approval } from './types';
-import { CHECKLIST_ITEMS as INITIAL_ITEMS } from './constants';
+import { CHECKLIST_ITEMS } from './constants';
 import { 
   ClipboardDocumentCheckIcon, 
   ArrowRightOnRectangleIcon, 
@@ -18,6 +18,13 @@ import {
   WrenchIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline';
+
+// -----------------------------------------
+// Importação e validação segura dos itens:
+// -----------------------------------------
+const INITIAL_ITEMS: ChecklistItem[] = Array.isArray(CHECKLIST_ITEMS)
+  ? CHECKLIST_ITEMS
+  : Object.values(CHECKLIST_ITEMS);
 
 // --- Componentes Auxiliares ---
 
@@ -430,10 +437,11 @@ const EntryDetail: React.FC<{ entry: ChecklistEntry; onBack: () => void }> = ({ 
         <div className="grid gap-2">
           {Object.entries(entry.items).map(([id, info]) => {
             const item = INITIAL_ITEMS.find(i => i.id === Number(id));
+            if (!item) return null; // impede erro React #31
             if (info.status === ItemStatus.OK) return null;
             return (
               <div key={id} className="flex justify-between items-center text-xs p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
-                <span className="font-black text-gray-700 uppercase">{item?.label}</span>
+                <span className="font-black text-gray-700 uppercase">{item.label}</span>
                 <span className={`font-black uppercase px-3 py-1 rounded-full text-[9px] ${info.status === ItemStatus.DEFEITUOSO ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
                   {info.status}
                 </span>
