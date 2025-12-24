@@ -427,12 +427,12 @@ const Dashboard: React.FC<{ user: User, entries: ChecklistEntry[]; onNew: () => 
 
   return (
     <div className="space-y-6">
-      {/* Seção de Veículos em Operação (Abertos para Retorno) - Visível para Gestores/Admin */}
+      {/* Seção de Veículos em Operação (Abertos para Retorno) */}
       {user.role !== 'OPERADOR' && openVehicles.length > 0 && (
         <div className="bg-blue-600 rounded-2xl p-6 shadow-xl text-white">
           <div className="flex items-center gap-2 mb-4">
             <ClockIcon className="w-5 h-5 animate-pulse" />
-            <h3 className="font-bold text-lg">Veículos em Operação <span className="text-blue-200 font-normal text-sm">({openVehicles.length} aguardando retorno)</span></h3>
+            <h3 className="font-bold text-lg">Veículos Aguardando Retorno <span className="text-blue-200 font-normal text-sm">({openVehicles.length})</span></h3>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
             {openVehicles.map(v => (
@@ -441,8 +441,8 @@ const Dashboard: React.FC<{ user: User, entries: ChecklistEntry[]; onNew: () => 
                   <span className="font-black text-lg">{v.prefix}</span>
                   <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 </div>
-                <p className="text-[10px] text-blue-100 uppercase font-bold">{v.driverName.split(' ')[0]}</p>
-                <p className="text-[9px] text-blue-200 mt-2 font-medium">Saída às {new Date(v.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                <p className="text-[10px] text-blue-100 uppercase font-bold truncate">{v.driverName.split(' ')[0]}</p>
+                <p className="text-[9px] text-blue-200 mt-2 font-medium">Saída: {new Date(v.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
               </div>
             ))}
           </div>
@@ -451,8 +451,8 @@ const Dashboard: React.FC<{ user: User, entries: ChecklistEntry[]; onNew: () => 
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Histórico de Vistorias</h2>
-          <p className="text-gray-500 text-sm">{user.role === 'OPERADOR' ? 'Seus registros realizados' : 'Painel de monitoramento da frota'}</p>
+          <h2 className="text-2xl font-bold text-gray-900">Vistorias</h2>
+          <p className="text-gray-500 text-sm">{user.role === 'OPERADOR' ? 'Seus registros' : 'Monitoramento da frota'}</p>
         </div>
         {(user.role === 'OPERADOR' || user.role === 'ADMIN') && (
           <button onClick={onNew} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md hover:bg-blue-700 transition-all active:scale-95">
@@ -497,7 +497,7 @@ const Dashboard: React.FC<{ user: User, entries: ChecklistEntry[]; onNew: () => 
         {filteredEntries.length === 0 ? (
           <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
             <FunnelIcon className="w-12 h-12 text-gray-200 mx-auto mb-2" />
-            <p className="text-gray-400 font-medium">Nenhum checklist encontrado para este filtro.</p>
+            <p className="text-gray-400 font-medium">Nenhum checklist encontrado.</p>
           </div>
         ) : filteredEntries.map((entry) => {
           const needsMaintenance = entry.hasIssues && !entry.maintenanceApproval;
@@ -524,7 +524,7 @@ const Dashboard: React.FC<{ user: User, entries: ChecklistEntry[]; onNew: () => 
                   </div>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[11px] text-gray-500">
                     <span className="flex items-center gap-1"><CalendarIcon className="w-3 h-3" /> {new Date(entry.createdAt).toLocaleDateString('pt-BR')}</span>
-                    <span className="flex items-center gap-1 font-bold text-gray-700"><UserCircleIcon className="w-3 h-3" /> {entry.driverName}</span>
+                    <span className="flex items-center gap-1 font-bold text-gray-700 truncate max-w-[120px]"><UserCircleIcon className="w-3 h-3" /> {entry.driverName}</span>
                     {entry.maintenanceApproval && <span className="flex items-center gap-1 text-blue-600 font-bold bg-blue-50 px-1 rounded">MANUT. OK</span>}
                     {entry.operationApproval && <span className="flex items-center gap-1 text-blue-600 font-bold bg-blue-50 px-1 rounded">OPER. OK</span>}
                   </div>
