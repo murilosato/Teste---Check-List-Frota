@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from './supabaseClient';
 import { User, ChecklistEntry, Shift, ChecklistType, ItemStatus, Vehicle, ChecklistItem, Approval } from './types';
@@ -111,13 +110,29 @@ const App: React.FC = () => {
     const savedUsersList = localStorage.getItem('solurb_users_list');
 
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
-      setView('DASHBOARD');
+      try {
+        setUser(JSON.parse(savedUser));
+        setView('DASHBOARD');
+      } catch (e) {
+        console.error("Erro ao carregar usuário");
+      }
     }
-    if (savedEntries) setEntries(JSON.parse(savedEntries));
+    
+    if (savedEntries) {
+      try {
+        const parsed = JSON.parse(savedEntries);
+        if (Array.isArray(parsed)) setEntries(parsed);
+      } catch (e) {
+        console.error("Erro ao carregar vistorias");
+      }
+    }
     
     if (savedUsersList) {
-      setUsers(JSON.parse(savedUsersList));
+      try {
+        setUsers(JSON.parse(savedUsersList));
+      } catch (e) {
+        console.error("Erro ao carregar usuários");
+      }
     } else {
       const defaultUsers: User[] = [
         { id: '1', name: 'Administrador Principal', role: 'ADMIN', username: 'admin', matricula: '001' },
@@ -148,8 +163,8 @@ const App: React.FC = () => {
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const loginInput = (formData.get('username') as string).trim();
-    const passwordInput = (formData.get('password') as string).trim();
+    const loginInput = (formData.get('username') as string || '').trim();
+    const passwordInput = (formData.get('password') as string || '').trim();
     const found = users.find(u => u.username === loginInput || u.name === loginInput);
     if (found) {
       if (found.role === 'OPERADOR' && found.matricula !== passwordInput) {
@@ -193,8 +208,8 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-gray-900">{user?.name}</p>
-              <p className="text-[10px] font-black text-gray-400 uppercase leading-none">{user?.role}</p>
+              <p className="text-sm font-bold text-gray-900">{String(user?.name || '')}</p>
+              <p className="text-[10px] font-black text-gray-400 uppercase leading-none">{String(user?.role || '')}</p>
             </div>
             <div className="flex bg-gray-100 p-1 rounded-lg">
                <button onClick={() => setView('DASHBOARD')} className={`p-2 rounded-md ${view === 'DASHBOARD' ? 'bg-white shadow text-blue-600' : 'text-gray-400'}`}><Squares2X2Icon className="w-4 h-4"/></button>
@@ -253,8 +268,8 @@ const Dashboard: React.FC<{ entries: ChecklistEntry[]; onNew: () => void; onView
               {entry.hasIssues ? <ExclamationCircleIcon className="w-6 h-6"/> : <CheckCircleIcon className="w-6 h-6"/>}
             </div>
             <div>
-              <p className="font-black text-gray-900 text-lg uppercase leading-tight">{entry.prefix}</p>
-              <p className="text-xs text-gray-400 font-medium">{entry.date} • {entry.driverName}</p>
+              <p className="font-black text-gray-900 text-lg uppercase leading-tight">{String(entry.prefix || '')}</p>
+              <p className="text-xs text-gray-400 font-medium">{String(entry.date || '')} • {String(entry.driverName || '')}</p>
             </div>
           </div>
           <ChevronRightIcon className="w-5 h-5 text-gray-300"/>
@@ -310,7 +325,6 @@ const ChecklistForm: React.FC<{ user: User; criteria: ChecklistItem[]; onCancel:
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      {/* Cabeçalho do Formulário */}
       <div className="bg-white p-6 rounded-3xl border shadow-sm flex flex-col items-center justify-center space-y-2">
          <button onClick={onCancel} className="flex items-center gap-1 text-red-500 font-black uppercase text-xs hover:bg-red-50 px-3 py-1 rounded-full transition-colors">
             <XCircleIcon className="w-4 h-4"/> Cancelar
@@ -360,11 +374,11 @@ const ChecklistForm: React.FC<{ user: User; criteria: ChecklistItem[]; onCancel:
             <div className="flex-1 overflow-y-auto p-6 space-y-10 no-scrollbar">
               {Object.entries(groupedItems).map(([category, items]) => (
                 <div key={category} className="space-y-4">
-                  <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-tighter bg-gray-100 py-1.5 px-4 rounded-full inline-block">{category}</h4>
+                  <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-tighter bg-gray-100 py-1.5 px-4 rounded-full inline-block">{String(category || '')}</h4>
                   <div className="space-y-4">
                     {items.map(item => (
                       <div key={item.id} className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-                        <p className="text-sm font-black text-gray-700 leading-tight uppercase">{item.label}</p>
+                        <p className="text-sm font-black text-gray-700 leading-tight uppercase">{String(item.label || '')}</p>
                         <div className="grid grid-cols-3 gap-2">
                           <button onClick={() => handleItemStatus(item.id, ItemStatus.OK)} className={`flex flex-col items-center justify-center gap-1 py-3 rounded-2xl text-[10px] font-black transition-all ${formData.items?.[item.id]?.status === ItemStatus.OK ? 'bg-green-600 text-white shadow-lg shadow-green-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>
                             <CheckIcon className="w-5 h-5" /> OK
@@ -419,8 +433,8 @@ const EntryDetail: React.FC<{ entry: ChecklistEntry; onBack: () => void }> = ({ 
     <div className="bg-white p-10 rounded-3xl border shadow-xl space-y-8">
       <div className="flex justify-between items-start border-b border-gray-100 pb-6">
         <div>
-          <h2 className="text-4xl font-black text-blue-600 uppercase tracking-tighter leading-none">{entry.prefix}</h2>
-          <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest mt-1">{entry.type} • {entry.date}</p>
+          <h2 className="text-4xl font-black text-blue-600 uppercase tracking-tighter leading-none">{String(entry.prefix || '')}</h2>
+          <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest mt-1">{String(entry.type || '')} • {String(entry.date || '')}</p>
         </div>
         <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase shadow-sm ${entry.hasIssues ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
           {entry.hasIssues ? 'Pendências Detectadas' : 'Sem Observações'}
@@ -428,27 +442,27 @@ const EntryDetail: React.FC<{ entry: ChecklistEntry; onBack: () => void }> = ({ 
       </div>
       
       <div className="grid grid-cols-2 gap-10">
-        <div><p className="text-gray-400 uppercase text-[10px] font-black mb-1.5">Condutor Responsável</p><p className="font-black text-gray-800 text-lg leading-tight uppercase">{entry.driverName}</p></div>
+        <div><p className="text-gray-400 uppercase text-[10px] font-black mb-1.5">Condutor Responsável</p><p className="font-black text-gray-800 text-lg leading-tight uppercase">{String(entry.driverName || '')}</p></div>
         <div><p className="text-gray-400 uppercase text-[10px] font-black mb-1.5">Métrica do Veículo</p><p className="font-black text-gray-800 text-lg leading-tight uppercase">{entry.km} KM • {entry.horimetro} H</p></div>
       </div>
 
       <div className="space-y-4">
         <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b pb-1">Relatório de Irregularidades</h4>
         <div className="grid gap-2">
-          {Object.entries(entry.items).map(([id, info]) => {
+          {Object.entries(entry.items || {}).map(([id, info]) => {
             const item = INITIAL_ITEMS.find(i => i.id === Number(id));
             if (!item) return null; // impede erro React #31
-            if (info.status === ItemStatus.OK) return null;
+            if (!info || info.status === ItemStatus.OK) return null;
             return (
               <div key={id} className="flex justify-between items-center text-xs p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
-                <span className="font-black text-gray-700 uppercase">{item.label}</span>
+                <span className="font-black text-gray-700 uppercase">{String(item.label || '')}</span>
                 <span className={`font-black uppercase px-3 py-1 rounded-full text-[9px] ${info.status === ItemStatus.DEFEITUOSO ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
-                  {info.status}
+                  {String(info.status || '')}
                 </span>
               </div>
             );
           })}
-          {Object.values(entry.items).every(i => i.status === ItemStatus.OK) && (
+          {Object.values(entry.items || {}).every(i => i && typeof i === 'object' && 'status' in i && i.status === ItemStatus.OK) && (
             <p className="text-xs text-green-600 font-bold bg-green-50 p-4 rounded-2xl border border-green-100">✓ Todos os componentes operando em conformidade técnica.</p>
           )}
         </div>
