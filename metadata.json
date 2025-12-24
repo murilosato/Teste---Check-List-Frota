@@ -1,7 +1,22 @@
 {
-  "name": "EcoCheck - Gestão de Frotas Solurb",
-  "description": "Sistema digital de checklist para saída e retorno de veículos de coleta de resíduos, substituindo formulários em papel por uma interface moderna e segura.",
-  "requestFramePermissions": [
-    "camera"
-  ]
+  "name": "checklist-frota",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.4.5"
+  },
+  "requestFramePermissions": [],
+  "description": ""
 }
